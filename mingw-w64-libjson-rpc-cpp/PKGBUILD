@@ -1,0 +1,46 @@
+# Maintainer: Michał Słomkowski <m.slomkowski@gmail.com>
+# PKGBUILD is based on PKGBUILD of libjson-rpc-cpp
+pkgname=mingw-w64-libjson-rpc-cpp
+pkgver=0.6.0
+pkgrel=1
+pkgdesc="C++ framework for json-rpc 1.0 and 2.0 (mingw-w64). Doesn't contain jsonrpcstub executable."
+arch=('any')
+url="https://github.com/cinemast/libjson-rpc-cpp"
+license=('MIT')
+makedepends=('mingw-w64-cmake')
+depends=('mingw-w64-crt' 'mingw-w64-curl' 'mingw-w64-libmicrohttpd' 'mingw-w64-jsoncpp')
+options=('!strip' '!buildflags' 'staticlibs')
+source=("https://github.com/cinemast/libjson-rpc-cpp/archive/v0.6.0.tar.gz" "skip-install-win32-deps.patch")
+sha256sums=('98baf15e51514339be54c01296f0a51820d2d4f17f8c9d586f1747be1df3290b' 'cbb977441cf7d2ae89a4da9a2d5403ae4b82fb2e1bc3ab1566930a66f2f4b2e0')
+
+_architectures="i686-w64-mingw32 x86_64-w64-mingw32"
+
+prepare() {
+ cd "${srcdir}"/libjson-rpc-cpp-${pkgver}
+ patch -Np1 -i ../skip-install-win32-deps.patch
+}
+
+build() { 
+  unset LDFLAGS
+  cd "$srcdir/libjson-rpc-cpp-$pkgver/"
+  for _arch in ${_architectures}; do
+    mkdir -p build-${_arch} && pushd build-${_arch}
+    ${_arch}-cmake \
+      -DCMAKE_BUILD_TYPE=Release \
+	 -DCOMPILE_STUBGEN=0 \
+	 -DCOMPILE_EXAMPLES=0 \
+	 -DCOMPILE_TESTS=0 \
+	 ..
+    make
+    popd
+  done
+}
+
+package() {
+  for _arch in ${_architectures}; do
+    cd "${srcdir}/libjson-rpc-cpp-$pkgver/build-${_arch}"
+    make DESTDIR="${pkgdir}" install
+    ${_arch}-strip --strip-unneeded "$pkgdir"/usr/${_arch}/bin/*.dll
+    ${_arch}-strip -g "$pkgdir"/usr/${_arch}/lib/*.a
+  done
+}
