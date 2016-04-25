@@ -2,7 +2,7 @@
 # PKGBUILD is based on PKGBUILD of libjson-rpc-cpp
 pkgname=mingw-w64-libjson-rpc-cpp
 pkgver=0.6.0
-pkgrel=1
+pkgrel=2
 pkgdesc="C++ framework for json-rpc 1.0 and 2.0 (mingw-w64). Doesn't contain jsonrpcstub executable."
 arch=('any')
 url="https://github.com/cinemast/libjson-rpc-cpp"
@@ -30,6 +30,7 @@ build() {
 	 -DCOMPILE_STUBGEN=0 \
 	 -DCOMPILE_EXAMPLES=0 \
 	 -DCOMPILE_TESTS=0 \
+	 -DBUILD_STATIC_LIBS=1 \
 	 ..
     make
     popd
