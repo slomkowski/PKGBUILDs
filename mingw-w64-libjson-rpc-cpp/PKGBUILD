@@ -10,14 +10,14 @@ license=('MIT')
 makedepends=('mingw-w64-cmake')
 depends=('mingw-w64-crt' 'mingw-w64-curl' 'mingw-w64-libmicrohttpd' 'mingw-w64-jsoncpp')
 options=('!strip' '!buildflags' 'staticlibs')
-source=("https://github.com/cinemast/libjson-rpc-cpp/archive/v0.6.0.tar.gz" "skip-install-win32-deps.patch")
-sha256sums=('98baf15e51514339be54c01296f0a51820d2d4f17f8c9d586f1747be1df3290b' 'cbb977441cf7d2ae89a4da9a2d5403ae4b82fb2e1bc3ab1566930a66f2f4b2e0')
+source=("https://github.com/cinemast/libjson-rpc-cpp/archive/v0.6.0.tar.gz" "mingw.patch")
+sha256sums=('98baf15e51514339be54c01296f0a51820d2d4f17f8c9d586f1747be1df3290b' '02eeca61e91c54d8bcb2ef6b0a0f18cad75dbf62ac82b80619f2eb17143ae3fe')
 
 _architectures="i686-w64-mingw32 x86_64-w64-mingw32"
 
 prepare() {
  cd "${srcdir}"/libjson-rpc-cpp-${pkgver}
- patch -Np1 -i ../skip-install-win32-deps.patch
+ patch -Np1 -i ../mingw.patch
 }
 
 build() { 

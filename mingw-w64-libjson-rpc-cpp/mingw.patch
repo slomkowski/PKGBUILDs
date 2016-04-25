@@ -1,0 +1,64 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 9c5b037..fe5f8d0 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -57,10 +57,6 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/lib")
+ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/bin")
+ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/lib")
+ 
+-if (WIN32)
+-	set(CMAKE_INSTALL_PREFIX ${PROJECT_BINARY_DIR}/dist)
+-endif()
+-
+ # setup global include_directories (for backwards compatibility)
+ include_directories("${CMAKE_BINARY_DIR}/gen/")
+ include_directories("${CMAKE_BINARY_DIR}/gen/jsonrpccpp/common")
+diff --git a/src/jsonrpccpp/CMakeLists.txt b/src/jsonrpccpp/CMakeLists.txt
+index d22a2e1..af172a1 100644
+--- a/src/jsonrpccpp/CMakeLists.txt
++++ b/src/jsonrpccpp/CMakeLists.txt
+@@ -153,13 +153,6 @@ install(FILES ${jsonrpc_install_header_server}  DESTINATION include/jsonrpccpp/s
+ install(FILES ${client_connector_header}        DESTINATION include/jsonrpccpp/client/connectors)
+ install(FILES ${server_connector_header}        DESTINATION include/jsonrpccpp/server/connectors)
+ 
+-if (WIN32)
+-	file(GLOB win32_libs ${CMAKE_SOURCE_DIR}/win32-deps/lib/*.dll)
+-	file(COPY ${win32_libs} DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
+-	install(FILES ${win32_libs} DESTINATION bin)
+-	install(DIRECTORY ${CMAKE_SOURCE_DIR}/win32-deps/include DESTINATION .)
+-endif()
+-
+ install(TARGETS ${ALL_LIBS}
+         LIBRARY DESTINATION lib/${CMAKE_LIBRARY_PATH}
+         ARCHIVE DESTINATION lib/${CMAKE_LIBRARY_PATH}
+diff --git a/src/jsonrpccpp/CMakeLists.txt b/src/jsonrpccpp/CMakeLists.txt
+index af172a1..5de9f4a 100644
+--- a/src/jsonrpccpp/CMakeLists.txt
++++ b/src/jsonrpccpp/CMakeLists.txt
+@@ -82,7 +82,7 @@ endif()
+ if (BUILD_STATIC_LIBS OR MSVC)
+ 	add_library(jsonrpccommonStatic STATIC ${jsonrpc_source_common} ${jsonrpc_header} ${jsonrpc_helper_source_common})
+ 	target_link_libraries(jsonrpccommonStatic ${JSONCPP_LIBRARIES})
+-	set_target_properties(jsonrpccommonStatic PROPERTIES OUTPUT_NAME jsonrpccpp-common)
++	set_target_properties(jsonrpccommonStatic PROPERTIES OUTPUT_NAME jsonrpccpp-common COMPILE_FLAGS "-DCURL_STATICLIB")
+ 
+ 	if (NOT BUILD_SHARED_LIBS)
+ 		add_library(jsonrpccommon ALIAS jsonrpccommonStatic)
+@@ -101,7 +101,7 @@ endif()
+ if (BUILD_STATIC_LIBS OR MSVC)
+ 	add_library(jsonrpcclientStatic STATIC ${jsonrpc_source_client} ${jsonrpc_header} ${jsonrpc_header_client} ${client_connector_source})
+ 	target_link_libraries(jsonrpcclientStatic jsonrpccommonStatic ${client_connector_libs})
+-	set_target_properties(jsonrpcclientStatic PROPERTIES OUTPUT_NAME jsonrpccpp-client)
++	set_target_properties(jsonrpcclientStatic PROPERTIES OUTPUT_NAME jsonrpccpp-client COMPILE_FLAGS "-DCURL_STATICLIB")
+ 
+ 	if (NOT BUILD_SHARED_LIBS)
+ 		add_library(jsonrpcclient ALIAS jsonrpcclientStatic)
+@@ -120,7 +120,7 @@ endif()
+ if (BUILD_STATIC_LIBS OR MSVC)
+ 	add_library(jsonrpcserverStatic STATIC ${jsonrpc_source_server} ${jsonrpc_header} ${jsonrpc_header_server} ${server_connector_source})
+ 	target_link_libraries(jsonrpcserverStatic jsonrpccommonStatic ${server_connector_libs})
+-	set_target_properties(jsonrpcserverStatic PROPERTIES OUTPUT_NAME jsonrpccpp-server)
++	set_target_properties(jsonrpcserverStatic PROPERTIES OUTPUT_NAME jsonrpccpp-server COMPILE_FLAGS "-DCURL_STATICLIB")
+ 
+ 	if (NOT BUILD_SHARED_LIBS)
+ 		add_library(jsonrpcserver ALIAS jsonrpcserverStatic)
